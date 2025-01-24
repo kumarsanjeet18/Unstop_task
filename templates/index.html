@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reservation System</title>
+    <script>
+        let roomsHidden = false;
+        let bookingResultHidden = false;
+
+        async function fetchRooms() {
+            const response = await fetch('/rooms');
+            const data = await response.json();
+            const roomsElement = document.getElementById('rooms');
+            if (roomsHidden) {
+                roomsElement.innerText = JSON.stringify(data, null, 2);
+                roomsHidden = false;
+            } else {
+                roomsElement.innerText = '';
+                roomsHidden = true;
+            }
+        }
+
+        async function bookRooms() {
+            const numRooms = document.getElementById('numRooms').value;
+            const response = await fetch('/book', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ num_rooms: parseInt(numRooms) })
+            });
+            const data = await response.json();
+            const bookingResultElement = document.getElementById('bookingResult');
+            if (bookingResultHidden) {
+                bookingResultElement.innerText = JSON.stringify(data, null, 2);
+                bookingResultHidden = false;
+            } else {
+                bookingResultElement.innerText = '';
+                bookingResultHidden = true;
+            }
+        }
+
+        async function resetRooms() {
+            const response = await fetch('/reset', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            alert(data.message);  // Show reset confirmation
+        }
+
+        async function generateRandomOccupancy() {
+            const response = await fetch('/generate', {
+                method: 'POST',
+            });
+            const data = await response.json();
+            alert(data.message);  // Show random occupancy confirmation
+        }
+    </script>
+</head>
+<body>
+<h1>Hotel Reservation System</h1>
+<button onclick="fetchRooms()">View Rooms</button>
+<pre id="rooms"></pre>
+
+<h3>Book Rooms</h3>
+<input type="number" id="numRooms" placeholder="Enter number of rooms" />
+<button onclick="bookRooms()">Book</button>
+<pre id="bookingResult"></pre>
+
+<h3>Additional Actions</h3>
+<button onclick="generateRandomOccupancy()">Generate Random Occupancy</button>
+<button onclick="resetRooms()">Reset All Booking</button>
+</body>
+</html>
